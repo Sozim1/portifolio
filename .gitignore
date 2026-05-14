@@ -24,4 +24,6 @@ Thumbs.db
 # Local Codex/working artifacts
 .codex/
 .codex-video-frames/
+DESIGN.md
+EXPLICACAO_PROJETO.md
 *.local.md
