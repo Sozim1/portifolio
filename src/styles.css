@@ -50,6 +50,38 @@
     isolation: isolate;
   }
 
+  .aero-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 4;
+    width: 320px;
+    height: 320px;
+    pointer-events: none;
+    border-radius: 50%;
+    opacity: 0;
+    background:
+      radial-gradient(circle at 44% 42%, rgba(255, 255, 255, 0.16), transparent 8%),
+      radial-gradient(circle at 50% 50%, rgba(160, 224, 171, 0.16), transparent 34%),
+      radial-gradient(circle at 52% 54%, rgba(255, 172, 46, 0.12), transparent 52%),
+      radial-gradient(circle at 50% 50%, transparent 0 55%, rgba(255, 255, 255, 0.12) 56%, transparent 59%);
+    transform: translate3d(calc(var(--aero-x, 50vw) - 50%), calc(var(--aero-y, 50vh) - 50%), 0);
+    transition: opacity 220ms ease;
+  }
+
+  .aero-cursor::before {
+    content: "";
+    position: absolute;
+    inset: 18%;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    background: radial-gradient(circle at 44% 42%, rgba(255, 255, 255, 0.12), transparent 54%);
+  }
+
+  .aero-has-pointer .aero-cursor {
+    opacity: 0.46;
+  }
+
   .motion-background {
     position: fixed;
     inset: 0;
@@ -91,6 +123,13 @@
     background-image: radial-gradient(rgba(255, 255, 255, 0.16) 0.6px, transparent 0.7px);
     background-size: 3px 3px;
     opacity: 0.075;
+  }
+
+  .aero-enabled .motion-background::before {
+    transform:
+      translate3d(calc(-1% + (var(--aero-nx, 0) * 18px)), calc(-1% + (var(--aero-ny, 0) * 18px)), 0)
+      rotate(calc(-6deg + (var(--aero-nx, 0) * 5deg)))
+      scale(1);
   }
 
   #app::before {
@@ -235,6 +274,12 @@
       radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.82) 67%, rgba(255, 172, 46, 0.26) 69%, rgba(0, 0, 0, 0.88) 72%);
     opacity: 0.82;
     transform: rotate(-11deg);
+  }
+
+  .aero-enabled .hero-orb {
+    transform:
+      translate3d(calc(var(--aero-nx, 0) * -28px), calc(var(--aero-ny, 0) * -22px), 0)
+      rotate(calc(-11deg + (var(--aero-nx, 0) * 4deg)));
   }
 
   .hero-content {
@@ -641,6 +686,10 @@
     animation: none;
   }
 
+  .aero-cursor {
+    display: none;
+  }
+
   .intro-kicker,
   .hero-content h1,
   .hero-copy,
@@ -658,6 +707,12 @@
     filter: none;
     transform: none;
     pointer-events: auto;
+  }
+}
+
+@media (pointer: coarse) {
+  .aero-cursor {
+    display: none;
   }
 }
 

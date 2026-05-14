@@ -1,5 +1,6 @@
 import "./styles.css";
 
+const root = document.documentElement;
 const introText = document.querySelector("#introText");
 const introPhrases = [
   "hello portfolio",
@@ -43,4 +44,54 @@ if (introText) {
 
     window.setTimeout(swapIntroText, swapDelay);
   }
+}
+
+const canUsePointerAero =
+  window.matchMedia("(pointer: fine)").matches &&
+  !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+if (canUsePointerAero) {
+  root.classList.add("aero-enabled");
+
+  let targetX = window.innerWidth / 2;
+  let targetY = window.innerHeight / 2;
+  let currentX = targetX;
+  let currentY = targetY;
+  let rafId = 0;
+
+  const updateAero = () => {
+    currentX += (targetX - currentX) * 0.14;
+    currentY += (targetY - currentY) * 0.14;
+
+    root.style.setProperty("--aero-x", `${currentX}px`);
+    root.style.setProperty("--aero-y", `${currentY}px`);
+    root.style.setProperty("--aero-nx", `${(currentX / window.innerWidth - 0.5).toFixed(4)}`);
+    root.style.setProperty("--aero-ny", `${(currentY / window.innerHeight - 0.5).toFixed(4)}`);
+
+    rafId = window.requestAnimationFrame(updateAero);
+  };
+
+  window.addEventListener(
+    "pointermove",
+    (event) => {
+      targetX = event.clientX;
+      targetY = event.clientY;
+      root.classList.add("aero-has-pointer");
+    },
+    { passive: true },
+  );
+
+  window.addEventListener(
+    "pointerleave",
+    () => {
+      root.classList.remove("aero-has-pointer");
+    },
+    { passive: true },
+  );
+
+  rafId = window.requestAnimationFrame(updateAero);
+
+  window.addEventListener("pagehide", () => {
+    window.cancelAnimationFrame(rafId);
+  });
 }
