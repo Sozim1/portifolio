@@ -23,4 +23,5 @@ Thumbs.db
 
 # Local Codex/working artifacts
 .codex/
+.codex-video-frames/
 *.local.md
