@@ -46,54 +46,33 @@ if (introText) {
   }
 }
 
-const canUsePointerAero =
-  window.matchMedia("(pointer: fine)").matches &&
-  !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const canUseScrollAero = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-if (canUsePointerAero) {
-  root.classList.add("aero-enabled");
+if (canUseScrollAero) {
+  root.classList.add("scroll-aero-enabled");
 
-  let targetX = window.innerWidth / 2;
-  let targetY = window.innerHeight / 2;
-  let currentX = targetX;
-  let currentY = targetY;
-  let rafId = 0;
+  let ticking = false;
 
-  const updateAero = () => {
-    currentX += (targetX - currentX) * 0.14;
-    currentY += (targetY - currentY) * 0.14;
+  const updateScrollAero = () => {
+    const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+    const progress = Math.min(window.scrollY / maxScroll, 1);
+    const heroProgress = Math.min(window.scrollY / Math.max(window.innerHeight, 1), 1);
 
-    root.style.setProperty("--aero-x", `${currentX}px`);
-    root.style.setProperty("--aero-y", `${currentY}px`);
-    root.style.setProperty("--aero-nx", `${(currentX / window.innerWidth - 0.5).toFixed(4)}`);
-    root.style.setProperty("--aero-ny", `${(currentY / window.innerHeight - 0.5).toFixed(4)}`);
-
-    rafId = window.requestAnimationFrame(updateAero);
+    root.style.setProperty("--scroll-progress", progress.toFixed(4));
+    root.style.setProperty("--hero-scroll", heroProgress.toFixed(4));
+    ticking = false;
   };
 
-  window.addEventListener(
-    "pointermove",
-    (event) => {
-      targetX = event.clientX;
-      targetY = event.clientY;
-      root.classList.add("aero-has-pointer");
-    },
-    { passive: true },
-  );
+  const requestScrollAero = () => {
+    if (!ticking) {
+      ticking = true;
+      window.requestAnimationFrame(updateScrollAero);
+    }
+  };
 
-  window.addEventListener(
-    "pointerleave",
-    () => {
-      root.classList.remove("aero-has-pointer");
-    },
-    { passive: true },
-  );
-
-  rafId = window.requestAnimationFrame(updateAero);
-
-  window.addEventListener("pagehide", () => {
-    window.cancelAnimationFrame(rafId);
-  });
+  updateScrollAero();
+  window.addEventListener("scroll", requestScrollAero, { passive: true });
+  window.addEventListener("resize", requestScrollAero);
 }
 
 const revealItems = document.querySelectorAll(
@@ -126,23 +105,4 @@ if (revealItems.length) {
 
     revealItems.forEach((item) => revealObserver.observe(item));
   }
-}
-
-const interactiveCards = document.querySelectorAll(".project-panel, .project-card, .stack-columns > div");
-
-if (canUsePointerAero && interactiveCards.length) {
-  interactiveCards.forEach((card) => {
-    card.addEventListener(
-      "pointermove",
-      (event) => {
-        const rect = card.getBoundingClientRect();
-        const x = ((event.clientX - rect.left) / rect.width) * 100;
-        const y = ((event.clientY - rect.top) / rect.height) * 100;
-
-        card.style.setProperty("--card-x", `${x.toFixed(2)}%`);
-        card.style.setProperty("--card-y", `${y.toFixed(2)}%`);
-      },
-      { passive: true },
-    );
-  });
 }

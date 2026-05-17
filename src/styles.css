@@ -50,38 +50,6 @@
     isolation: isolate;
   }
 
-  .aero-cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 4;
-    width: 320px;
-    height: 320px;
-    pointer-events: none;
-    border-radius: 50%;
-    opacity: 0;
-    background:
-      radial-gradient(circle at 44% 42%, rgba(255, 255, 255, 0.16), transparent 8%),
-      radial-gradient(circle at 50% 50%, rgba(160, 224, 171, 0.16), transparent 34%),
-      radial-gradient(circle at 52% 54%, rgba(255, 172, 46, 0.12), transparent 52%),
-      radial-gradient(circle at 50% 50%, transparent 0 55%, rgba(255, 255, 255, 0.12) 56%, transparent 59%);
-    transform: translate3d(calc(var(--aero-x, 50vw) - 50%), calc(var(--aero-y, 50vh) - 50%), 0);
-    transition: opacity 220ms ease;
-  }
-
-  .aero-cursor::before {
-    content: "";
-    position: absolute;
-    inset: 18%;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 50%;
-    background: radial-gradient(circle at 44% 42%, rgba(255, 255, 255, 0.12), transparent 54%);
-  }
-
-  .aero-has-pointer .aero-cursor {
-    opacity: 0.46;
-  }
-
   .motion-background {
     position: fixed;
     inset: 0;
@@ -125,11 +93,15 @@
     opacity: 0.075;
   }
 
-  .aero-enabled .motion-background::before {
+  .scroll-aero-enabled .motion-background::before {
     transform:
-      translate3d(calc(-1% + (var(--aero-nx, 0) * 18px)), calc(-1% + (var(--aero-ny, 0) * 18px)), 0)
-      rotate(calc(-6deg + (var(--aero-nx, 0) * 5deg)))
-      scale(1);
+      translate3d(
+        calc(-1% + (var(--scroll-progress, 0) * 34px)),
+        calc(-1% + (var(--hero-scroll, 0) * 24px)),
+        0
+      )
+      rotate(calc(-8deg + (var(--scroll-progress, 0) * 10deg)))
+      scale(calc(1 + (var(--hero-scroll, 0) * 0.035)));
   }
 
   #app::before {
@@ -276,10 +248,15 @@
     transform: rotate(-11deg);
   }
 
-  .aero-enabled .hero-orb {
+  .scroll-aero-enabled .hero-orb {
     transform:
-      translate3d(calc(var(--aero-nx, 0) * -28px), calc(var(--aero-ny, 0) * -22px), 0)
-      rotate(calc(-11deg + (var(--aero-nx, 0) * 4deg)));
+      translate3d(
+        calc(var(--hero-scroll, 0) * -42px),
+        calc(var(--hero-scroll, 0) * 28px),
+        0
+      )
+      rotate(calc(-11deg + (var(--hero-scroll, 0) * 8deg)));
+    opacity: calc(0.82 - (var(--hero-scroll, 0) * 0.22));
   }
 
   .hero-content {
@@ -502,13 +479,16 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(
-      260px circle at var(--card-x, 50%) var(--card-y, 28%),
-      rgba(255, 255, 255, 0.13),
-      rgba(160, 224, 171, 0.055) 26%,
-      transparent 58%
-    );
+    background:
+      linear-gradient(
+        120deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.08) 38%,
+        rgba(160, 224, 171, 0.045) 50%,
+        transparent 66%
+      );
     opacity: 0;
+    transform: translateX(calc(-28% + (var(--scroll-progress, 0) * 56%)));
     transition: opacity 180ms ease;
   }
 
@@ -730,10 +710,6 @@
     animation: none;
   }
 
-  .aero-cursor {
-    display: none;
-  }
-
   .intro-kicker,
   .hero-content h1,
   .hero-copy,
@@ -758,12 +734,6 @@
     filter: none;
     transform: none;
     pointer-events: auto;
-  }
-}
-
-@media (pointer: coarse) {
-  .aero-cursor {
-    display: none;
   }
 }
 
