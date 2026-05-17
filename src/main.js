@@ -1,4 +1,6 @@
 import "./styles.css";
+import "./modal.css";
+import { initProjectCards } from "./modal.js";
 
 const root = document.documentElement;
 const introText = document.querySelector("#introText");
@@ -106,3 +108,6 @@ if (revealItems.length) {
     revealItems.forEach((item) => revealObserver.observe(item));
   }
 }
+
+// Initialize project modal system
+initProjectCards();
