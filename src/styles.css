@@ -476,9 +476,14 @@
   }
 
   .project-panel,
-  .project-card {
+  .project-card,
+  .stack-columns div {
     position: relative;
     overflow: hidden;
+  }
+
+  .project-panel,
+  .project-card {
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: var(--radius-cards);
     background:
@@ -488,6 +493,29 @@
       border-color 180ms ease,
       transform 180ms ease,
       background 180ms ease;
+  }
+
+  .project-panel::after,
+  .project-card::after,
+  .stack-columns div::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      260px circle at var(--card-x, 50%) var(--card-y, 28%),
+      rgba(255, 255, 255, 0.13),
+      rgba(160, 224, 171, 0.055) 26%,
+      transparent 58%
+    );
+    opacity: 0;
+    transition: opacity 180ms ease;
+  }
+
+  .project-panel:hover::after,
+  .project-card:hover::after,
+  .stack-columns div:hover::after {
+    opacity: 1;
   }
 
   .project-panel::before,
@@ -628,6 +656,22 @@
       rgba(0, 0, 0, 0.14);
   }
 
+  .reveal-item {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(28px);
+    transition:
+      opacity 720ms ease var(--reveal-delay, 0ms),
+      filter 720ms ease var(--reveal-delay, 0ms),
+      transform 720ms ease var(--reveal-delay, 0ms);
+  }
+
+  .reveal-item.is-visible {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+
   .stack-columns h3 {
     font-size: var(--text-subheading);
     line-height: var(--leading-subheading);
@@ -694,10 +738,17 @@
   .hero-content h1,
   .hero-copy,
   .hero-actions,
+  .reveal-item,
   .project-panel,
   .project-card,
   .scroll-cue {
     transition: none;
+  }
+
+  .reveal-item {
+    opacity: 1;
+    filter: none;
+    transform: none;
   }
 
   .intro-active .hero-title,

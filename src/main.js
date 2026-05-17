@@ -95,3 +95,54 @@ if (canUsePointerAero) {
     window.cancelAnimationFrame(rafId);
   });
 }
+
+const revealItems = document.querySelectorAll(
+  ".section-heading, .project-panel, .project-card, .stack-columns > div, .site-footer",
+);
+
+if (revealItems.length) {
+  revealItems.forEach((item, index) => {
+    item.classList.add("reveal-item");
+    item.style.setProperty("--reveal-delay", `${Math.min(index * 45, 360)}ms`);
+  });
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    revealItems.forEach((item) => item.classList.add("is-visible"));
+  } else {
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        rootMargin: "0px 0px -12% 0px",
+        threshold: 0.12,
+      },
+    );
+
+    revealItems.forEach((item) => revealObserver.observe(item));
+  }
+}
+
+const interactiveCards = document.querySelectorAll(".project-panel, .project-card, .stack-columns > div");
+
+if (canUsePointerAero && interactiveCards.length) {
+  interactiveCards.forEach((card) => {
+    card.addEventListener(
+      "pointermove",
+      (event) => {
+        const rect = card.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / rect.width) * 100;
+        const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+        card.style.setProperty("--card-x", `${x.toFixed(2)}%`);
+        card.style.setProperty("--card-y", `${y.toFixed(2)}%`);
+      },
+      { passive: true },
+    );
+  });
+}
