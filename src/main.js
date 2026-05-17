@@ -3,17 +3,17 @@ import "./styles.css";
 const root = document.documentElement;
 const introText = document.querySelector("#introText");
 const introPhrases = [
-  "hello portfolio",
-  "hello projects",
-  "hello systems",
-  "hello integrations",
+  "hello cliente",
+  "hello recrutador",
+  "hello desenvolvedor",
+  "hello curioso",
 ];
 
 if (introText) {
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (prefersReducedMotion) {
-    introText.textContent = "Desenvolvimento full-stack, automação e produto";
+    introText.textContent = "portfólio técnico";
     document.documentElement.classList.add("intro-complete");
   } else {
     document.documentElement.classList.add("intro-active");
@@ -26,7 +26,7 @@ if (introText) {
 
       if (phraseIndex >= introPhrases.length) {
         window.setTimeout(() => {
-          introText.textContent = "Desenvolvimento full-stack, automação e produto";
+          introText.textContent = "portfólio técnico";
           document.documentElement.classList.remove("intro-active");
           document.documentElement.classList.add("intro-complete");
         }, 420);
