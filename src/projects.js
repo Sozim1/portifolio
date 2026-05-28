@@ -323,4 +323,30 @@ export const projects = [
     links: { github: "", deploy: "", docs: "" },
     accentColor: "#a3e635",
   },
+  {
+    id: "devlens-ai",
+    title: "DevLens AI",
+    shortDescription: "API FastAPI com GenAI para code review, documentacao tecnica e sugestao de testes.",
+    description:
+      "API modular criada para simular uma ferramenta interna de produtividade para times de desenvolvimento. Recebe trechos de codigo, avalia riscos, sugere melhorias, gera documentacao em Markdown e cria planos de testes unitarios.",
+    problem:
+      "Revisoes manuais de codigo, documentacao e escrita de testes consomem tempo do time e podem deixar passar riscos simples de seguranca, validacao e manutenibilidade.",
+    solution:
+      "FastAPI com Pydantic, provider isolado para OpenAI/Gemini, fallback local deterministico, historico em SQLite, exportacao em Markdown, rate limit simples e Swagger automatico para validar os fluxos da API.",
+    features: [
+      "Endpoint de code review com score, risco e problemas encontrados",
+      "Sugestoes de melhoria e versao refatorada do codigo",
+      "Geracao automatica de documentacao tecnica em Markdown",
+      "Geracao de casos de teste e exemplo de teste unitario",
+      "Historico das analises em SQLite",
+      "Provider configuravel para OpenAI, Gemini ou fallback local",
+      "Docker, Swagger e testes automatizados com Pytest",
+    ],
+    techs: ["Python", "FastAPI", "Pydantic", "GenAI", "SQLite", "Docker", "Pytest"],
+    cover: "",
+    images: [],
+    demoVideo: "",
+    links: { github: "https://github.com/Sozim1/devlens-ai", deploy: "", docs: "" },
+    accentColor: "#22d3ee",
+  },
 ];
