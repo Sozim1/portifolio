@@ -1,0 +1,671 @@
+/* =====================================================
+   PROJECT MODAL, GALLERY & CARD ENHANCEMENTS
+   ===================================================== */
+
+/* --- Enhanced project cards: clickable & image-aware --- */
+
+.project-panel,
+.project-card {
+  cursor: pointer;
+  position: relative;
+}
+
+.project-card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 480ms ease;
+  border-radius: var(--radius-cards);
+  z-index: 0;
+}
+
+.project-card-img.is-loaded {
+  opacity: 0.18;
+}
+
+.project-panel:hover .project-card-img.is-loaded,
+.project-card:hover .project-card-img.is-loaded {
+  opacity: 0.28;
+}
+
+/* "Open" indicator badge on cards */
+.card-open-hint {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius-buttons);
+  background: rgba(0, 0, 0, 0.48);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+}
+
+.card-open-hint::before {
+  content: "";
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.project-panel:hover .card-open-hint,
+.project-card:hover .card-open-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Accent line at bottom of card on hover */
+.project-panel::after,
+.project-card::after {
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
+}
+
+.project-card-accent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 0 0 var(--radius-cards) var(--radius-cards);
+  background: var(--card-accent, rgba(255,255,255,0.2));
+  opacity: 0;
+  transform: scaleX(0.3);
+  transform-origin: left;
+  transition:
+    opacity 260ms ease,
+    transform 320ms ease;
+}
+
+.project-panel:hover .project-card-accent,
+.project-card:hover .project-card-accent {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* All card/panel content above overlays */
+.project-panel > *:not(.project-card-img):not(.project-card-accent):not(.card-open-hint),
+.project-card > *:not(.project-card-img):not(.project-card-accent):not(.card-open-hint) {
+  position: relative;
+  z-index: 1;
+}
+
+/* =====================================================
+   MODAL OVERLAY & CONTAINER
+   ===================================================== */
+
+.project-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 3vw, 40px);
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(14px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+  overflow-y: auto;
+}
+
+.project-modal-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.project-modal {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  max-height: calc(100vh - 80px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background:
+    linear-gradient(160deg, rgba(20, 20, 24, 0.98) 0%, rgba(10, 10, 14, 0.99) 100%);
+  overflow: hidden;
+  overflow-y: auto;
+  transform: translateY(28px) scale(0.97);
+  transition:
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 320ms ease;
+  opacity: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+}
+
+.project-modal::-webkit-scrollbar {
+  width: 5px;
+}
+.project-modal::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 3px;
+}
+
+.project-modal-overlay.is-open .project-modal {
+  transform: none;
+  opacity: 1;
+}
+
+/* Close button */
+.modal-close {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 20px 0;
+  pointer-events: none;
+}
+
+.modal-close-btn {
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+  backdrop-filter: blur(8px);
+}
+
+.modal-close-btn:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.08) rotate(90deg);
+}
+
+/* =====================================================
+   MODAL COVER IMAGE / HERO
+   ===================================================== */
+
+.modal-cover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  overflow: hidden;
+  margin-top: -54px; /* slides under sticky close row */
+  background: #0a0a10;
+}
+
+.modal-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+  transition: opacity 400ms ease;
+}
+
+.modal-cover-img.is-loaded {
+  opacity: 0.85;
+}
+
+.modal-cover-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.modal-cover-placeholder svg {
+  opacity: 0.18;
+}
+
+.modal-cover-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 40%,
+    rgba(10, 10, 14, 0.6) 70%,
+    rgba(10, 10, 14, 1) 100%
+  );
+}
+
+/* =====================================================
+   MODAL CONTENT BODY
+   ===================================================== */
+
+.modal-body {
+  padding: clamp(20px, 4vw, 48px);
+  padding-top: 12px;
+  display: grid;
+  gap: 36px;
+}
+
+.modal-header {
+  display: grid;
+  gap: 10px;
+}
+
+.modal-title {
+  font-size: clamp(26px, 4vw, 42px);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.08;
+  color: #fff;
+}
+
+.modal-subtitle {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: clamp(15px, 1.6vw, 18px);
+  line-height: 1.45;
+}
+
+/* Techs badge row */
+.modal-techs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.modal-tech-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 11px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-buttons);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.03em;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.modal-tech-badge:hover {
+  border-color: var(--modal-accent, rgba(255,255,255,0.4));
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+}
+
+/* Section blocks (Problem / Solution / Features) */
+.modal-section {
+  display: grid;
+  gap: 12px;
+}
+
+.modal-section-label {
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--modal-accent, rgba(255, 255, 255, 0.5));
+  opacity: 0.85;
+}
+
+.modal-section-text {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: clamp(14px, 1.4vw, 16px);
+  line-height: 1.6;
+}
+
+.modal-features-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px 16px;
+}
+
+.modal-features-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: clamp(13px, 1.3vw, 15px);
+  line-height: 1.4;
+}
+
+.modal-features-list li::before {
+  content: "";
+  flex-shrink: 0;
+  margin-top: 6px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--modal-accent, rgba(255, 255, 255, 0.5));
+}
+
+/* Two-column layout for problem/solution on wider screens */
+.modal-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 640px) {
+  .modal-two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.modal-two-col .modal-section {
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* =====================================================
+   GALLERY INSIDE MODAL
+   ===================================================== */
+
+.modal-gallery {
+  display: grid;
+  gap: 12px;
+}
+
+.gallery-main {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0a0a10;
+}
+
+.gallery-main-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 280ms ease;
+}
+
+.gallery-main-img.is-fading {
+  opacity: 0;
+}
+
+.gallery-thumbs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.gallery-thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery-thumb {
+  flex-shrink: 0;
+  width: 72px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    opacity 180ms ease,
+    transform 180ms ease;
+  opacity: 0.5;
+}
+
+.gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-thumb.is-active,
+.gallery-thumb:hover {
+  border-color: var(--modal-accent, rgba(255, 255, 255, 0.5));
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+/* =====================================================
+   DEMO SECTION — video or animated fallback
+   ===================================================== */
+
+.modal-demo {
+  display: grid;
+  gap: 14px;
+}
+
+/* Real video */
+.modal-demo-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.modal-demo-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ---- Animated fake demo ---- */
+.fake-demo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #050509;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Browser chrome bar */
+.fake-demo-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.fake-demo-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.fake-demo-dot:nth-child(1) { background: #ff5f57; }
+.fake-demo-dot:nth-child(2) { background: #ffbd2e; }
+.fake-demo-dot:nth-child(3) { background: #28c840; }
+
+.fake-demo-url {
+  flex: 1;
+  height: 20px;
+  margin-left: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Steps animation container */
+.fake-demo-content {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fake-demo-step {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 20px;
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 500ms ease,
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.fake-demo-step.is-active {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.fake-demo-step.is-leaving {
+  opacity: 0;
+  transform: translateY(-18px);
+  transition:
+    opacity 350ms ease,
+    transform 350ms ease;
+}
+
+.fake-demo-step-icon {
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1;
+  filter: drop-shadow(0 0 18px var(--modal-accent, rgba(255,255,255,0.3)));
+}
+
+.fake-demo-step-label {
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--modal-accent, rgba(255,255,255,0.6));
+}
+
+.fake-demo-step-title {
+  font-size: clamp(16px, 2.2vw, 22px);
+  font-weight: var(--font-weight-regular);
+  text-align: center;
+  color: #fff;
+  line-height: 1.25;
+}
+
+.fake-demo-step-desc {
+  font-size: clamp(12px, 1.3vw, 14px);
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  line-height: 1.5;
+  max-width: 360px;
+}
+
+/* Progress dots */
+.fake-demo-progress {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+
+.fake-demo-progress-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition:
+    background 280ms ease,
+    transform 280ms ease;
+}
+
+.fake-demo-progress-dot.is-active {
+  background: var(--modal-accent, rgba(255, 255, 255, 0.7));
+  transform: scale(1.4);
+}
+
+/* =====================================================
+   MODAL LINKS ROW
+   ===================================================== */
+
+.modal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.modal-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius-buttons);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+  text-decoration: none;
+}
+
+.modal-link-btn:hover {
+  border-color: var(--modal-accent, rgba(255,255,255,0.5));
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.modal-link-btn svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* =====================================================
+   BODY SCROLL LOCK
+   ===================================================== */
+
+body.modal-open {
+  overflow: hidden;
+}
